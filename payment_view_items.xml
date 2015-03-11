@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+       <record id="view_account_payment_items_form" model="ir.ui.view">
+            <field name="name">account.payment.items.form</field>
+            <field name="model">account.payment.items</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Payment Requests">
+                    <header>
+ 				<button name="confirm" string="Confirm" type="object" colspan="2" states="fetched" attrs="{'invisible':[('fetched','=',False)]}"/>
+ 				<button name="fetchInvoices" string="Fetch Invoices" type="object" colspan="2" states="draft"/>
+				<button name="approve" string="Approve" type="object" colspan="2" groups="base.group_paymentrequestapproval" states="confirm"/>
+				<button name="set_for_funding" string="For Funding" type="object" colspan="2" states="approved"/>
+				<button name="assignCheck" type="object" string="Assign Check"
+                        attrs="{'invisible': ['|',('checkAssigned','!=',False),('state','!=','for_funding')]}" class="oe_highlight"/>
+                <button name="audit" type="object" string="Audited"
+                        attrs="{'invisible': ['|',('checkAudit','!=',False),('state','!=','for_funding')]}" class="oe_highlight"/>
+                <button name="release" type="object" string="Release Check"
+                        attrs="{'invisible': [('state','!=','funded')]}" class="oe_highlight"/>
+                <button name="edit_accts" type="object" string="Edit/Save Accounts"
+                        attrs="{'invisible': ['|',('checkAudit','!=',False),('state','!=','approved')]}" class="oe_highlight"/>
+                <button name="funded" string="Assign Funds" type="object" colspan="2" attrs="{'invisible': ['|','|',('checkAudit','!=',True),('checkAssigned','!=',True),('state','!=','for_funding')]}"/>
+				<field name="state"  widget="statusbar" statusbar_visible="confirm,approved,released,cancelled" statusbar_colors='{"draft":"blue","assigned":"red","funded":"green"}'/>
+                    </header>
+<sheet><group>
+			
+</group>
+				<group colspan="4" col="4">
+					<group>
+						<field name="partner_id" domain="[('supplier','=',True)]" context="{'search_default_supplier':1, 'show_address': 1}" options='{"always_reload": True}' attrs="{'readonly': [('state','!=','draft')]}"/>
+						<field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="fetched" invisible="True"/>
+						<field name="editorAudit" invisible="True"/>
+						<field name="checkAssigned" invisible="True"/>		
+						<field name="checkAudit" invisible="True"/>
+					</group>
+					<group>
+						<field name="date_start" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="date_end" attrs="{'readonly':[('state','!=','draft')]}"/>
+					</group>
+				</group>
+					<group colspan="4" col="2">
+					   <field name="line_ids" nolabel="1" height="200" attrs="{'readonly':[('editorAudit','=',False)]}">
+					       <tree string="Particulars" editable="top">
+                               <field name="name" readonly="1"/>
+                               <field name="ref" readonly="1"/>
+                               <field name="account_id" groups="account.group_account_user" readonly="1"/>
+                               <field name="amount" sum="Total Amount" readonly="1"/>
+                               <field name="amount_residual" sum="Unpaid Amount" readonly="1"/>
+                               <field name="amount_topay" sum="Amount to Pay"/>
+                           </tree>					       
+					   </field>
+					</group>
+					<separator string="Other Info" colspan="4"/>
+					<group colspan="4" col="2">
+						<field name="comment" colspan="4" nolabel="1"/>
+					</group>
+					<group colspan="4" col="2" groups="account.group_account_user">
+						<separator string="Payment Voucher" colspan="4"/>
+						<group colspan="4" col="4">
+							<field name="bank_id"/>
+							<field name="amount_due"/>
+							<field name="account_no"/>
+							<field name="check_num"/>
+							<field name="check_date"/>
+						</group>
+						<group colspan="4" col="4">
+							<separator string="Dates and Officers" colspan="4"/>
+							<field name="funded_by" readonly="1"/>
+							<field name="funding_date" readonly="1"/>
+							<field name="released_by" readonly="1"/>
+							<field name="releasing_date" readonly="1"/>
+						</group>
+						<separator string="Accounting Entries" colspan="4"/>
+						<group>
+						<field name="payable_ids" readonly="1" nolabel="1">
+							<tree string="Journal Items">
+	                        	<field name="move_id"/>
+	                            <field name="ref"/>
+	                            <field name="date"/>
+	                            <field name="partner_id"/>
+	                            <field name="account_id"/>
+	                            <field name="name"/>
+	                            <field name="debit"/>
+	                            <field name="credit"/>
+	                            <field name="state"/>
+	                         </tree>
+						</field>
+						</group>
+					</group>
+	</sheet>
+				</form>
+            </field>
+        </record>
+ 		<record model="ir.ui.view" id="account_payment_items_tree">
+            <field name="name">account.payment.items.tree</field>
+            <field name="model">account.payment.items</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Payment Requests">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="date"/>
+                    <field name="state"/>
+
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_account_payment_items_form">
+        	<field name="name">Payment Requests(Items)</field>
+	        <field name="res_model">account.payment.items</field>
+		    <field name="view_type">form</field>
+        </record>
+        
+        <menuitem id="menu_account_payment_items" 
+            action="action_account_payment_items_form" 
+            parent="gq_fad_menu"
+            sequence="50" 
+            groups="base.group_user"/>  
+            
+</data>
+</openerp>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_gq_pr_check_clear" model="ir.ui.view">
+            <field name="name">gq.pr.check.clear.form</field>
+            <field name="model">gq.pr.check.clear</field>
+            <field name="arch" type="xml">
+                <form string="Check Clearing">
+                    <group colspan="4" col="4">
+                        <field name="date_start"/>
+                        <field name="bank_id"/>
+                        <field name="date_stop"/>
+                    </group>
+                    <footer>
+                        <button string="Cleared" name="clearDate" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+               </form>
+            </field>
+        </record>
+
+        <record id="action_gq_pr_check_clear" model="ir.actions.act_window">
+            <field name="name">Check Clearing</field>
+            <field name="res_model">gq.pr.check.clear</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_gq_pr_check_clear"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem name="Check Clearing" id="gq_checkclear_menu" action="action_gq_pr_check_clear" parent="gq_fad_menu"/>
+
+    </data>
+</openerp>

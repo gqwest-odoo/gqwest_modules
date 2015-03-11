@@ -1,0 +1,387 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+       <record id="view_account_payment_form" model="ir.ui.view">
+            <field name="name">account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Payment Requests">
+                    <header>
+ 				<button name="confirm" string="Confirm" type="object" colspan="2" states="draft"/>
+				<button name="approve" string="Approve" type="object" colspan="2" states="confirm" groups="base.group_paymentrequestapproval"/>
+				<button name="set_for_funding" string="For Funding" type="object" colspan="2" states="approved"/>
+				<button name="assignCheck" type="object" string="Assign Check"
+                        attrs="{'invisible': ['|',('checkAssigned','!=',False),('state','!=','for_funding')]}" class="oe_highlight"/>
+                <button name="audit" type="object" string="Audited"
+                        attrs="{'invisible': ['|',('checkAudit','!=',False),('state','!=','for_funding')]}" class="oe_highlight"/>
+                <button name="release" type="object" string="Release Check"
+                        attrs="{'invisible': [('state','!=','funded')]}" class="oe_highlight"/>
+                <button name="edit_accts" type="object" string="Edit/Save Accounts"
+                        attrs="{'invisible': ['|',('checkAudit','!=',False),('state','!=','approved')]}" class="oe_highlight"/>
+                <button name="edit_accts" type="object" string="Edit/Save Accounts"
+                        states="for_liquidation" class="oe_highlight"/>
+                <button name="funded" string="Assign Funds" type="object" colspan="2" attrs="{'invisible': ['|','|',('checkAudit','!=',True),('checkAssigned','!=',True),('state','!=','for_funding')]}"/>
+				<button name="cancel" string="Cancel" type="object" colspan="2" states="draft"/>
+				<field name="state"  widget="statusbar" statusbar_visible="confirm,approved,released,cancelled" statusbar_colors='{"draft":"blue","assigned":"red","funded":"green"}'/>
+                    </header>
+<sheet><group>
+			
+</group>
+				<group colspan="4" col="4">
+					<group>
+						<field name="partner_id" domain="[('supplier','=',True)]" context="{'search_default_supplier':1, 'show_address': 1}" options='{"always_reload": True}' attrs="{'readonly': [('state','!=','draft')]}"/>
+						<field name="for_liquidation" attrs="{'readonly':[('state','!=','draft')]}"/>						
+					</group>
+					<group>
+						<field name="journal_id"/>
+						<field name="requestor_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="approving_officer" attrs="{'readonly':[('state','!=','draft')],'required':[('state','=','draft')]}"/>
+						<field name="editorAudit" invisible="True"/>
+						<field name="checkAssigned" invisible="True"/>
+						<field name="checkAudit" invisible="True"/>
+						<field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+					</group>
+				</group>
+					<group colspan="4" col="2" attrs="{'invisible':[('for_liquidation','=',True)]}">
+					   <field name="line_ids" nolabel="1" height="200" attrs="{'readonly':[('editorAudit','=',False)]}">
+					       <tree string="Particulars" editable="top">
+                               <field name="name"/>
+                               <field name="ref"/>
+                               <field name="account_id" groups="account.group_account_user"/>
+                               <field name="analytic_id" groups="account.group_account_user"/>
+                               <field name="amount" sum="Total"/>
+                           </tree>					       
+					   </field>
+					</group>
+					<separator string="Other Info" colspan="4"/>
+					<group colspan="4" col="2">
+						<field name="comment" colspan="4" nolabel="1"/>
+					</group>
+					<group colspan="4" col="2" groups="account.group_account_user">
+						<separator string="Cash Advance Voucher" colspan="4" attrs="{'invisible':[('for_liquidation','=',False)]}"/>
+						<separator string="Payment Voucher" colspan="4" attrs="{'invisible':[('for_liquidation','=',True)]}"/>
+						<group colspan="4" col="4">
+							<field name="bank_id"/>
+							<field name="amount_due"/>
+							<field name="account_no"/>
+							<field name="check_num"/>
+							<field name="check_date"/>
+							<field name="ca_account_id"/>
+						</group>
+						<group colspan="4" col="4">
+							<separator string="Dates and Officers" colspan="4"/>
+							<field name="funded_by" readonly="1"/>
+							<field name="funding_date" readonly="1"/>
+							<field name="released_by" readonly="1"/>
+							<field name="releasing_date" readonly="1"/>
+						</group>
+						<group colspan="4" col="2" attrs="{'invisible':[('for_liquidation','=',False)]}">
+						<separator string="Liquidation Lines" colspan="4"/>
+						   <field name="liquidation_ids" nolabel="1" height="200" attrs="{'readonly':[('editorAudit','=',False)]}">
+						       <tree string="Particulars" editable="top">
+	                               <field name="name"/>
+	                               <field name="ref"/>
+	                               <field name="account_id" groups="account.group_account_user"/>
+	                               <field name="analytic_id" groups="account.group_account_user"/>
+	                               <field name="amount" sum="Total"/>
+	                           </tree>					       
+						   </field>
+						</group>
+						<separator string="Accounting Entries" colspan="4" invisible="0"/>
+						<notebook invisible="0">
+							<page string="Payable Entries" attrs="{'invisible':[('for_liquidation','=',True)]}">
+								<group>
+									<field name="payable_ids" readonly="1" nolabel="1">
+										<tree string="Journal Items">
+				                        	<field name="move_id"/>
+				                            <field name="ref"/>
+				                            <field name="date"/>
+				                            <field name="partner_id"/>
+				                            <field name="account_id"/>
+				                            <field name="name"/>
+				                            <field name="debit"/>
+				                            <field name="credit"/>
+				                            <field name="state"/>
+				                         </tree>
+									</field>
+								</group>
+							</page>
+							<page string="Releasing Entries">
+								<group>
+									<field name="release_ids" readonly="1" nolabel="1">
+										<tree string="Journal Items">
+				                        	<field name="move_id"/>
+				                            <field name="ref"/>
+				                            <field name="date"/>
+				                            <field name="partner_id"/>
+				                            <field name="account_id"/>
+				                            <field name="name"/>
+				                            <field name="debit"/>
+				                            <field name="credit"/>
+				                            <field name="state"/>
+				                         </tree>
+									</field>
+								</group>
+							</page>
+						</notebook>
+					</group>
+	</sheet>
+				</form>
+            </field>
+        </record>
+ 		<record model="ir.ui.view" id="account_payment_tree">
+            <field name="name">account.payment.tree</field>
+            <field name="model">account.payment</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Payment Requests">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="requestor_id"/>
+                    <field name="bank_id"/>
+                    <field name="account_no"/>
+                    <field name="check_num"/>
+                    <field name="date"/>
+                    <field name="state"/>
+
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_account_payment_kanban">
+            <field name="name">account.payment.kanban</field>
+            <field name="model">account.payment</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="partner_id" >
+                	<field name="color"/>
+                    <field name="state"/>
+                    <field name="bank_id"/>
+                    <field name="account_no"/>
+                    <field name="check_num"/>
+                    <field name="amount_due"/>
+                    <field name="partner_id"/>
+                    <field name="for_liquidation"/>
+                    <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_dropdown_toggle oe_dropdown_kanban" groups="base.group_user">
+                                <span class="oe_e">í</span>
+                                <ul class="oe_dropdown_menu">
+                                    <t t-if="widget.view.is_action_enabled('edit')"><li><a type="edit">Edit...</a></li></t>
+                                    <t t-if="widget.view.is_action_enabled('delete')"><li><a type="delete">Delete</a></li></t>
+                                    <br/>
+                                    <li><ul class="oe_kanban_colorpicker" data-field="color"/></li>
+                                </ul>
+                            </div>
+
+                            <div class="oe_kanban_content">
+                                <div><b><field name="name"/></b></div>
+								<div><label>Partner:</label><field name="partner_id"/></div>
+                                <div><label>Source Bank:</label><field name="bank_id"/></div>
+                                <div><label>Account No:</label><field name="account_no"/></div>
+                                <div><label>Check No:</label><field name="check_num"/></div>
+                                <div><label>Check Amount: </label><field name="amount_due"/></div>
+                                <div attrs="{'invisible':[('for_liquidation','=',False)]}"><label>Subject for Liquidation</label></div>
+                                
+                            </div>
+                            <div class="oe_clear"></div>
+                        </div>
+                    </t>
+                    </templates>
+                </kanban>
+            </field>
+         </record>
+        
+        <record model="ir.actions.act_window" id="action_account_payment_form">
+        	<field name="name">Payment Requests</field>
+	        <field name="res_model">account.payment</field>
+		    <field name="view_type">form</field>
+		    <field name="view_mode">tree,form,kanban</field>
+        </record>
+        
+        
+        <menuitem id="menu_account_payment" 
+            action="action_account_payment_form" 
+            parent="gq_fad_menu"
+            sequence="10" 
+            groups="base.group_user"/>  
+            
+            <!-- Pettycash Transaction View -->
+            
+         <record id="view_account_pettycash_form" model="ir.ui.view">
+            <field name="name">account.pettycash.form</field>
+            <field name="model">account.pettycash</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Pettycash Requests">
+                    <header>
+ 				<button name="confirm" string="Confirm" type="object" colspan="2" states="draft"/>
+				<button name="approve" string="Approve" type="object" colspan="2" states="confirm" groups="base.group_apc_appoff"/>
+				<button name="release" string="Release" type="object" colspan="2" states="approved" groups="base.group_apc_manager"/>
+				<button name="liquidate" string="Liquidate" type="object" states="released" groups="base.group_apc_users"/>
+				<button name="cancel" string="Cancel" type="object" colspan="2" attrs="{'invisible':[('state','not in',['draft','confirm'])]}"/>
+				<field name="state"  widget="statusbar" statusbar_visible="confirm,approved,released,liquidated" statusbar_colors='{"draft":"blue","approved":"yellow","released":"green","liquidated":"orange","cancelled":"gray"}'/>
+                    </header>
+<sheet>
+				<center><separator string="Pettycash Request"/></center>
+				<group colspan="4" col="4">
+					<group>
+						<field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="journal_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="class_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="liquidated" attrs="{'invisible':[('liquidated','=',False)]}"/>
+					</group>	
+					<group>
+						<field name="requestor_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="approving_officer" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="amount_requested" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="amount_approved" attrs="{'readonly':[('state','!=','confirm')],
+					   											'invisible':[('state','not in',['confirm','approved','released','liquidated'])]}"/>
+					   	<field name="amount_remaining" attrs="{'readonly':[('state','!=','released')],
+					   											'invisible':[('state','not in',['released','liquidated'])]}"/>
+					</group>
+				</group>
+				
+					<group colspan="4" col="2">
+					   <field name="line_ids" nolabel="1" height="200" attrs="{'readonly':[('state','!=','released')],
+					   														'invisible':[('state','not in',['released','liquidated'])]}">
+					       <tree string="Particulars" editable="top">
+                               <field name="name"/>
+                               <field name="ref"/>
+                               <field name="amount" sum="Total"/>
+                           </tree>					       
+					   </field>
+					</group>
+					<separator string="Other Info" colspan="4"/>
+					<group colspan="4" col="2">
+						<field name="comment" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+					</group>
+					<separator string="Accounting Entries" colspan="4"/>
+					<group>
+					<field name="move_ids" readonly="1" nolabel="1">
+						<tree string="Journal Items">
+                        	<field name="move_id"/>
+                            <field name="ref"/>
+                            <field name="date"/>
+                            <field name="account_id"/>
+                            <field name="name"/>
+                            <field name="debit"/>
+                            <field name="credit"/>
+                            <field name="state"/>
+                            <field name="reconcile_id"/>
+                         </tree>
+					</field>
+					</group>
+	</sheet>
+				</form>
+            </field>
+        </record>
+ 		<record model="ir.ui.view" id="account_pettycash_tree">
+            <field name="name">account.pettycash.tree</field>
+            <field name="model">account.pettycash</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Pettycash Requests">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="journal_id"/>
+                    <field name="amount_requested"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_account_pettycash_form">
+        	<field name="name">Pettycash Requests</field>
+	        <field name="res_model">account.pettycash</field>
+		    <field name="view_type">form</field>
+        </record>
+        
+        <menuitem id="menu_account_pettycash" 
+            action="action_account_pettycash_form" 
+            parent="gq_fad_menu"
+            sequence="50" 
+            groups="base.group_user"/>
+        
+        
+        
+        
+        <record id="view_account_pettycash_liquidation_form" model="ir.ui.view">
+            <field name="name">account.pettycash.liquidation.form</field>
+            <field name="model">account.pettycash.liquidation</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Pettycash Liquidation">
+                    <header>
+ 				<button name="confirm" string="Confirm" type="object" colspan="2" states="draft"/>
+ 				<button name="fetchData" string="Fetch Liquidations" type="object" states="draft" attrs="{'invisible':[('fetched','=','True')]}"/>
+				<button name="approve" string="Approve" type="object" colspan="2" states="confirm" groups="base.group_apc_appoff"/>
+				<button name="release" string="Release" type="object" colspan="2" states="approved" groups="base.group_apc_manager"/>
+				
+				<button name="cancel" string="Cancel" type="object" colspan="2" attrs="{'invisible':[('state','not in',['draft','confirm'])]}"/>
+				<field name="state"  widget="statusbar" statusbar_visible="confirm,approved,released" statusbar_colors='{"draft":"blue","approved":"yellow","released":"green","cancelled":"gray"}'/>
+                    </header>
+<sheet>
+				<group colspan="4" col="4">
+					<group>
+						<field name="pc_id"/>
+						<field name="date"/>
+						<field name="fetched" invisible="1"/>
+					</group>	
+					<group>
+						<field name="date_start" attrs="{'readonly':[('state','!=','draft')],'required':[('state','=','draft')]}"/>
+						<field name="date_stop" attrs="{'readonly':[('state','!=','draft')],'required':[('state','=','draft')]}"/>
+					</group>
+				</group>
+				
+					<group colspan="4" col="2">
+					   <field name="liquidation_lines" nolabel="1" height="200">
+					       <tree string="Particulars" editable="top">
+                               <field name="name" readonly="1"/>
+                               <field name="ref" readonly="1"/>
+                               <field name="apc_id" readonly="1"/>
+                               <field name="date" readonly="1"/>
+                               <field name="requestor_id" readonly="1"/>
+                               <field name="account_id"/>
+                               <field name="analytic_id" readonly="1"/>
+                               <field name="amount" sum="Total"/>
+                           </tree>					       
+					   </field>
+					</group>
+					<separator string="Check Details" colspan="4"/>
+					<group colspan="4" col="4">
+						<field name="bank_id"/>
+						<field name="checkAmount"/>
+						<field name="account_no"/>
+						<field name="check_no"/>
+					</group>
+	</sheet>
+				</form>
+            </field>
+        </record>
+ 		<record model="ir.ui.view" id="account_pettycash_liquidation_tree">
+            <field name="name">account.pettycash.liquidation.tree</field>
+            <field name="model">account.pettycash.liquidation</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Pettycash Liquidation">
+                    <field name="name"/>
+                    <field name="pc_id"/>
+                    <field name="date"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_account_pettycash_liquidation_form">
+        	<field name="name">Pettycash Liquidation</field>
+	        <field name="res_model">account.pettycash.liquidation</field>
+		    <field name="view_type">form</field>
+        </record>
+        
+        <menuitem id="menu_account_pettycash_liquidation" 
+            action="action_account_pettycash_liquidation_form" 
+            parent="gq_fad_menu"
+            sequence="60" 
+            groups="base.group_apc_users"/>              
+    </data>
+</openerp>

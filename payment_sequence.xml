@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <record id="seq_type_gqwest_paymentrequest" model="ir.sequence.type">
+            <field name="name">Payment Requests</field>
+            <field name="code">payment.request</field>
+        </record>
+
+        <record id="seq_gqwest_paymentrequest" model="ir.sequence">
+            <field name="name">Payment Requests</field>
+            <field name="code">payment.request</field>
+            <field name="prefix">PYR/%(y)s/</field>
+            <field name="padding">3</field>
+        </record>
+        <record id="seq_type_gq_servicing" model="ir.sequence.type">
+            <field name="name">Service Request</field>
+            <field name="code">gq.servicing</field>
+        </record>
+
+        <record id="seq_gq_servicing" model="ir.sequence">
+            <field name="name">Service Request</field>
+            <field name="code">gq.servicing</field>
+            <field name="prefix">SR</field>
+            <field name="padding">3</field>
+        </record>
+        
+        <record id="seq_type_gqwest_paymentrequest_items" model="ir.sequence.type">
+            <field name="name">Payment Requests</field>
+            <field name="code">payment.request.items</field>
+        </record>
+
+        <record id="seq_gqwest_paymentrequest_items" model="ir.sequence">
+            <field name="name">Payment Requests</field>
+            <field name="code">payment.request.items</field>
+            <field name="prefix">PYRI/%(y)s/</field>
+            <field name="padding">3</field>
+        </record>
+        <record id="seq_type_gqwest_irr" model="ir.sequence.type">
+            <field name="name">Item Releasing Request</field>
+            <field name="code">gq.irr</field>
+        </record>
+
+        <record id="seq_gqwest_irr" model="ir.sequence">
+            <field name="name">Item Releasing Request</field>
+            <field name="code">gq.irr</field>
+            <field name="prefix">IRR/%(y)s/</field>
+            <field name="padding">3</field>
+        </record>
+        
+        <record id="seq_type_gqwest_apc" model="ir.sequence.type">
+            <field name="name">Pettycash Transaction</field>
+            <field name="code">gq.apc</field>
+        </record>
+
+        <record id="seq_gqwest_apc" model="ir.sequence">
+            <field name="name">Pettycash Transaction</field>
+            <field name="code">gq.apc</field>
+            <field name="prefix">APC/%(y)s/</field>
+            <field name="padding">3</field>
+        </record>
+        
+        <record id="seq_type_gqwest_apcl" model="ir.sequence.type">
+            <field name="name">Pettycash Liquidation</field>
+            <field name="code">gq.apcl</field>
+        </record>
+
+        <record id="seq_gqwest_apcl" model="ir.sequence">
+            <field name="name">Pettycash Liquidation</field>
+            <field name="code">gq.apcl</field>
+            <field name="prefix">APCL/%(y)s/</field>
+            <field name="padding">3</field>
+        </record>
+        
+        <record id="base.group_paymentrequestapproval" model="res.groups">
+	        <field name="name">Payment Requests Approving Officers</field>
+	    </record>
+	<record id="base.group_paymentrequestusers" model="res.groups">
+                <field name="name">Payment Requests Users</field>
+            </record>
+            
+         <record id="base.group_apc_appoff" model="res.groups">
+	        <field name="name">Pettycash Approving Officers</field>
+	    </record>
+		
+		<record id="base.group_apc_users" model="res.groups">
+        	<field name="name">Pettycash Users</field>
+        </record>
+        <record id="base.group_apc_manager" model="res.groups">
+        	<field name="name">Pettycash Managers</field>
+        </record>
+        <record id="base.group_sr_ccd" model="res.groups">
+        	<field name="name">Customer Care(Service Request)</field>
+        </record>
+        <record id="base.group_sr_tech" model="res.groups">
+        	<field name="name">Technician(Service Request)</field>
+        </record>
+        <record id="base.group_sr_ccd_man" model="res.groups">
+        	<field name="name">Customer Care Manager(Service Request)</field>
+        </record>
+        <record id="base.group_sr_etd_man" model="res.groups">
+        	<field name="name">Engineering and Technical Manager(Service Request)</field>
+        </record>
+        <record id="base.group_irr_user" model="res.groups">
+        	<field name="name">Item Releasing User</field>
+        </record>
+        <record id="base.group_irr_man" model="res.groups">
+        	<field name="name">Item Releasing Manager</field>
+        </record>
+        <record id="base.group_irr_audit" model="res.groups">
+        	<field name="name">Item Releasing Auditor</field>
+        </record>
+            
+
+    </data>
+</openerp>

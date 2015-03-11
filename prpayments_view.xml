@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+		<!--Service Requests Form-->
+        <record model="ir.ui.view" id="view_gq_pr_tree">
+            <field name="name">gq.pr.tree</field>
+            <field name="model">gq.pr</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Provisionary Receipts">
+					<field name="name"/>
+					<field name="partner_id"/>
+					<field name="date"/>
+					<field name="pr_amount"/>
+					<field name="state"/>
+                </tree>
+            </field>
+        </record>
+		
+		<record id="view_gq_pr_filter" model="ir.ui.view">
+            <field name="name">gq.pr.filter</field>
+            <field name="model">gq.pr</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Provisionary Receipts">
+						<field name="name"/>
+						<field name="partner_id"/>
+                </search>
+            </field>
+        </record>      
+
+	<record model="ir.ui.view" id="view_gq_pr_form">
+            <field name="name">gq.pr.form</field>
+            <field name="model">gq.pr</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Provisionary Receipts">
+                    <header>
+                    <button name="checkTotalIncome" string="Confirm" type="object" states="draft"/>
+                    <button name="postEntries" string="Post Entries" type="object" states="confirmed"/>
+                    <field name="state"  widget="statusbar" statusbar_visible="draft,confirmed,posted,paid" statusbar_colors='{"confirmed":"green","draft":"blue","paid":"black","posted":"yellow"}'/>
+                    </header>
+<sheet>
+			<group colspan="4" col="4">
+				<group>
+					<field name="name" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+					<field name="partner_id" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1}" options='{"always_reload": True}' attrs="{'readonly': [('state','!=','draft')]}"/>
+					<field name="enable_edit"/>
+				</group>
+				<group>
+					<field name="date" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+					<field name="journal_id" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+					<field name="pr_amount" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+				</group>
+			</group>
+			<notebook>
+				<page string="Details">
+					<field name="breakdown_ids" nolabel="1" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}">
+						<tree string="PR Breakdown" editable="top" sum="amount">
+							<field name="name"/>
+							<field name="account_id"/>
+							<field name="analytic_id"/>
+							<field name="amount"/>
+						</tree>
+					</field>
+					<group colspan="4" col="4" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}">
+						<separator string="Notes" colspan="4"/>
+						<field name="notes" nolabel="1" colspan="4"/>
+					</group>
+				</page>
+				<page string="Payments">
+					<group colspan="4" col="4">
+						<group>
+							<separator string="Cash Payment" colspan="2"/>
+							<field name="cash_amount" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+							<field name="cash_account_id" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+						</group>
+						<group>
+							<separator string="Credit Card Payment" colspan="2"/>
+							<field name="cc_amount" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+							<field name="cc_approved_code" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+							<field name="cc_bank_name" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+							<field name="cctrans_date" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+							<field name="cc_account_id" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}"/>
+						</group>
+					</group>
+					<group>
+						<separator string="Check Payment" colspan="4"/>
+						<field name="check_warehouse_account"/>
+						<field name="check_ids" nolabel="1" attrs="{'readonly': [('state','!=','draft'),('enable_edit','=',False)]}" colspan="4">
+							<tree string="Checks" editable="top" sum="amount">
+								<field name="bank_name"/>
+								<field name="account_no"/>
+								<field name="name"/>
+								<field name="check_type"/>
+								<field name="check_date"/>
+								<field name="amount"/>
+							</tree>
+						</field>
+					</group>
+				</page>
+			</notebook>
+			
+</sheet>
+				</form>
+            </field>
+        </record>      
+		
+		<record model="ir.actions.act_window" id="action_gq_pr_form">
+            <field name="name">Provisionary Receipts</field>
+            <field name="res_model">gq.pr</field>
+        </record>		
+		<menuitem name="Provisionary Receipts" id="gq_pr_menu" action="action_gq_pr_form" parent="gq_ccd_menu"/>
+		<!--End of Menus-->
+
+
+
+        <record model="ir.ui.view" id="view_gq_checkpayment_tree">
+            <field name="name">gq.checkpayment.tree</field>
+            <field name="model">gq.checkpayment</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Check Payments">
+					<field name="name"/>
+					<field name="bank_name"/>
+					<field name="account_no"/>
+					<field name="check_type"/>
+					<field name="check_date"/>
+					<field name="clearing_date"/>
+					<field name="deposit_account"/>
+					<field name="amount"/>
+                </tree>
+            </field>
+        </record>
+		
+		<record id="view_gq_checkpayment_filter" model="ir.ui.view">
+            <field name="name">gq.checkpayment.filter</field>
+            <field name="model">gq.checkpayment</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Check Payments">
+						<field name="name"/>
+						<field name="bank_name"/>
+						<field name="account_no"/>
+						<field name="check_type"/>
+						<field name="check_date"/>
+						<field name="pr_id"/>
+						<field name="clearing_date"/>
+                </search>
+            </field>
+        </record>      
+
+	<record model="ir.ui.view" id="view_gq_checkpayment_form">
+            <field name="name">gq.checkpayment.form</field>
+            <field name="model">gq.checkpayment</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Check Payments">
+                    <header>
+                    <button name="checkClearing" string="Check Cleared" type="object"/>
+					<field name="state"  widget="statusbar" statusbar_visible="draft,cleared,returned" statusbar_colors='{"cleared":"black","draft":"blue","returned":"red"}'/>
+                    </header>
+<sheet>
+			<group>
+				<group colspan="4" col="4">
+					<group colspan="2" col="2">
+						<field name="amount"/>
+						<field name="name"/>
+						<field name="bank_name"/>
+						<field name="account_no"/>
+						<field name="deposit_account"/>
+					</group>
+					<group colspan="2" col="2">
+						<field name="check_type"/>
+						<field name="check_date"/>
+						<field name="clearing_date"/>
+						<field name="pr_id"/>
+					</group>
+				</group>
+				<group>
+					<field name="pr_line_ids" nolabel="1" attrs="{'readonly': [('state','!=','draft')]}">
+						<tree string="PR Breakdown" editable="top" sum="amount">
+							<field name="name"/>
+							<field name="account_id"/>
+							<field name="analytic_id"/>
+							<field name="amount"/>
+						</tree>
+					</field>
+				</group>
+			</group>
+</sheet>
+				</form>
+            </field>
+        </record>      
+		
+		<record model="ir.actions.act_window" id="action_gq_checkpayment_form">
+            <field name="name">Check Payments</field>
+            <field name="res_model">gq.checkpayment</field>
+        </record>
+        <menuitem name="Finance and Accounting" id="gq_fad_menu" parent="gq_root"/>
+		<menuitem name="Check Payments" id="gq_checkpayment_menu" action="action_gq_checkpayment_form" parent="gq_fad_menu"/>
+		<!--End of Menus-->
+		
+    </data>
+</openerp>

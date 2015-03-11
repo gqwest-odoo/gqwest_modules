@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    
+    
+    
+    	<record model="ir.ui.view" id="view_receivable_analytic_account_tree">
+            <field name="name">receivable.analytic.account.tree</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="after">
+					<field name="report_type"/>
+                    <field name="report_categ1" domain="[('report_type','=',report_type)]"/>
+                    <field name="report_categ2" domain="[('parent_id','=',report_categ1)]"/>
+                    <field name="report_categ3" domain="[('parent_id','=',report_categ2)]"/>
+                    <field name="receivable_analytic_id"/>
+                </field>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_afrc_tree">
+            <field name="name">account.financial.report.category.tree</field>
+            <field name="model">account.financial.report.category</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Financial Report Categories" editable="top">
+					<field name="name"/>
+					<field name="parent_id"/>
+					<field name="report_type"/>
+					<field name="sequence"/>
+                </tree>
+            </field>
+        </record>
+		
+		<record model="ir.actions.act_window" id="action_afrc_form">
+            <field name="name">Financial Report Categories</field>
+            <field name="res_model">account.financial.report.category</field>
+        </record>		
+		<menuitem name="Financial Report Categories" id="gq_afrc_menu" action="action_afrc_form" parent="account.menu_account_reports"/>
+		<!--End of Menus-->       
+    </data>
+</openerp>

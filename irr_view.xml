@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_gq_irr_tree">
+            <field name="name">gq.irr.tree</field>
+            <field name="model">gq.irr</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Items Releasing">
+					<field name="name"/>
+					<field name="date_request"/>
+					<field name="date_release"/>
+					<field name="partner_id"/>
+					<field name="type"/>
+					<field name="state"/>
+                </tree>
+            </field>
+        </record>
+		
+		<record id="view_gq_irr_filter" model="ir.ui.view">
+            <field name="name">gq.irr.filter</field>
+            <field name="model">gq.irr</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Item Releasing">
+						<field name="name"/>
+						<field name="partner_id"/>
+						<field name="type"/>
+						<field name="state"/>
+                </search>
+            </field>
+        </record>      
+		
+
+
+	<record model="ir.ui.view" id="view_gq_irr_form">
+            <field name="name">gq.irr.form</field>
+            <field name="model">gq.irr</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Item Releasing Request">
+                    <header>
+                    <button name="confirmOrder" string="Confirm Request" type='object' groups="base.group_irr_user" states='draft'/>
+                    <button name="approve" string="Approve" type='object' groups="base.group_irr_man" states='confirmed' class="oe_highlight"/>
+                    <button name="release" string="Released" type='object' groups="base.group_irr_user" states='approved' class="oe_highlight"/>
+                        <field name="state"  widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"waiting_availability":"red","available":"green"}'/>
+                    </header>
+<sheet>
+			<group colspan="4" col="4">
+				<group>
+					<field name="partner_id" context="{'search_default_customer':1, 'show_address': 1}" 
+					options='{"always_reload": True}' attrs="{'required':[('type','!=','caravan')],'readonly':[('state','!=','draft')]}"/>
+					<field name="approving_officer" attrs="{'required':[('state','!=','draft')],'readonly':[('state','!=','draft')]}"/>
+					<field name="group" attrs="{'required':[('state','!=','draft')],'readonly':[('state','!=','draft')]}"/>
+					
+				</group>
+				<group>
+					<field name="date_request" attrs="{'required':[('state','!=','draft')],'readonly':[('state','!=','draft')]}"/>
+					<field name="type" attrs="{'required':[('state','!=','draft')],'readonly':[('state','!=','draft')]}"/>
+					<field name="warehouse_id" groups="stock.group_stock_user"/>
+					<field name="picking_type" domain="[('warehouse_id','=',warehouse_id)]" groups="stock.group_stock_user"/>
+					<field name="release_id" readonly="1"/>
+				</group>
+			</group>
+			<group attrs="{'invisible':[('type','!=','caravan')]}">
+				<separator string="Items Requested for Sale" colspan="2"/>
+				<field name="caravanitem_ids" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}">
+					<tree string="Items Requested" editable="top" sum="quantity">
+						<field name="product_id"/>
+						<field name="quantity"/>
+						<field name="remaining" readonly="1"/>
+						<field name="uom"/>
+						<field name="price_unit"/>
+					</tree>
+				</field>			
+			</group>
+			<group colspan="4" col="4" attrs="{'invisible':[('type','!=','caravan')]}">
+				<separator string="Sales Receipts" colspan="4"/>
+				<field name="caravan_ids" nolabel="1" attrs="{'readonly':[('state','!=','released')]}">
+					<tree string="Sales Receipts">
+						<field name="name"/>
+						<field name="partner_id"/>
+						<field name="date"/>
+						<field name="state"/>
+					</tree>
+				</field>
+			</group>
+			<group attrs="{'invisible':[('type','in',['caravan','installation'])]}">
+				<separator string="Items for Release" colspan="2"/>
+				<field name="item_ids" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}">
+					<tree string="Items to Release" editable="top" sum="price_subtotal">
+						<field name="product_id"/>
+						<field name="quantity"/>
+						<field name="uom"/>
+						<field name="price_unit"/>
+						<field name="price_subtotal"/>
+						<field name="state" readonly="1" invisible="1"/>
+						<field name="type" readonly="1" invisible="1"/>
+					</tree>
+				</field>			
+			</group>
+			<group attrs="{'invisible':[('type','!=','installation')]}">
+				<separator string="Installation Materials" colspan="2"/>
+				<field name="installation_ids" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}">
+					<tree string="Installation Materials" editable="top" sum="quantity">
+						<field name="product_id"/>
+						<field name="quantity"/>
+						<field name="uom"/>
+						<field name="used_qty"/>
+					</tree>
+				</field>			
+			</group>
+			<group colspan="4" col="4" attrs="{'invisible':[('type','in',['installation','caravan'])]}">
+					<separator string="Payment Details" colspan="4"/>
+					<group colspan="4" col="4">
+						<field name="pr_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="other_pr" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="check_ids" nolabel="1" colspan="4" domain="[('pr_id','=',pr_id)]" attrs="{'readonly':[('state','!=','draft')]}">
+							<tree string="Checks">
+								<field name="name"/>
+								<field name="bank_name"/>
+								<field name="account_no"/>
+								<field name="check_date"/>
+								<field name="clearing_date"/>
+							</tree>
+						</field>
+					</group>
+				</group>
+			<group colspan="4" col="4">
+				<separator string="Notes" colspan="4"/>
+				<field name="notes" nolabel="1" colspan="4"/>
+			</group>
+</sheet>
+				</form>
+            </field>
+        </record>      
+        
+        <record id="view_stock_picking_irr_form" model="ir.ui.view">
+            <field name="name">stock.picking.irr.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="priority" position="after">
+                    <field name="irr_id" readonly="1"/>
+                </field>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_gq_caravan_tree">
+            <field name="name">gq.caravan.tree</field>
+            <field name="model">gq.caravan</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Caravan Sales">
+					<field name="name"/>
+						<field name="partner_id"/>
+						<field name="date"/>
+						<field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_gq_caravan_form">
+            <field name="name">gq.caravan.form</field>
+            <field name="model">gq.caravan</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Caravan Sales">
+                    <header>
+	                    <button name="confirmOrder" string="Confirm Request" type='object' groups="base.group_user" states='draft'/>
+	                    <button name="approve" string="Approve" type='object' groups="base.group_user" states='confirmed' class="oe_highlight"/>
+	                    <field name="state"  widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"waiting_availability":"red","available":"green"}'/>
+                    </header>
+					<sheet>
+						<group colspan="4" col="4">
+							<group>
+								<field name="name"/>
+								<field name="partner_id" context="{'search_default_customer':1, 'show_address': 1}" options='{"always_reload": True}' attrs="{'readonly':[('state','!=','draft')]}"/>
+							</group>
+							<group>
+								<field name="journal_id"/>
+								<field name="date"/>
+							</group>
+						</group>
+						<group>
+							<separator string="Sold Items" colspan="4"/>
+							<field name="item_ids" nolabel="1">
+								<tree string="Sold Items" editable="top">
+									<field name="product_id" on_change="onchange_product(product_id,qty,uom)"/>
+									<field name="qty" on_change="onchange_product(product_id,qty,uom)"/>
+									<field name="uom" on_change="onchange_product(product_id,qty,uom)"/>
+									<field name="unit_price" readonly="1"/>
+									<field name="subtotal" readonly="1"/>
+								</tree>
+							</field>
+						</group>
+					</sheet>
+				</form>
+            </field>
+        </record>      
+		
+		<record model="ir.actions.act_window" id="action_gq_caravan_form">
+            <field name="name">Caravan Sales</field>
+            <field name="res_model">gq.caravan</field>
+        </record>		
+		<menuitem name="Caravan Sales" id="gq_caravan_menu" action="action_gq_caravan_form" parent="gq_ccd_menu"/>
+		
+		<record model="ir.actions.act_window" id="action_gq_irr_form">
+            <field name="name">Item Releasing Request</field>
+            <field name="res_model">gq.irr</field>
+        </record>		
+		<menuitem name="Item Releasing Request" id="gq_irr_menu" action="action_gq_irr_form" parent="gq_ccd_menu"/>
+		<!--End of Menus-->       
+    </data>
+</openerp>

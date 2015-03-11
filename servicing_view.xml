@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+		<!--Service Requests Form-->
+        <record model="ir.ui.view" id="view_gq_servicing_tree">
+            <field name="name">gq.servicing.tree</field>
+            <field name="model">gq.servicing</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Machine Servicing Requests">
+					<field name="name"/>
+					<field name="partner_id"/>
+					<field name="request_date"/>
+					<field name="service_type"/>
+                </tree>
+            </field>
+        </record>
+		
+		<record id="view_gq_servicing_filter" model="ir.ui.view">
+            <field name="name">gq.servicing.filter</field>
+            <field name="model">gq.servicing</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Machine Servicing Requests">
+                    <group>
+						<field name="name"/>
+						<field name="partner_id"/>
+                                        <field name="service_type"/>
+
+                    </group>
+                </search>
+            </field>
+        </record>      
+
+	<record model="ir.ui.view" id="view_gq_servicing_form">
+            <field name="name">gq.servicing.form</field>
+            <field name="model">gq.servicing</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Machine Servicing Request">
+                    <header>
+                    	<button name="createPicking" string="Confirm Item Request" type='object' groups="base.group_user" states="assigned"/>
+                    	<!-- <button name="testmail" string="Test Email" type='object' groups="base.group_user" class="oe_highlight"/> -->
+                    	<button name="confirm" string="Confirm Servicing" type='object' groups="base.group_sr_ccd" states="draft" class="oe_highlight"/>
+                    	<button name="approve" string="Approve Request" type='object' groups="base.group_sr_ccd_man" states="confirm" class="oe_highlight"/>
+                    	<button name="assign" string="Assign Technician" type='object' groups="base.group_sr_etd_man" states="approve" class="oe_highlight"/>
+        				<!-- <button name="login" string="Login" type='object' groups="base.group_sr_tech" attrs="{'invisible': [('state','!=','in_progress')]}"/> -->
+						<button name="send_report" string="Send Report" type='object' groups="base.group_sr_tech" attrs="{'invisible': [('state','!=','in_progress')]}"/>
+						<button name="backjob" string="Backjob" type='object' groups="base.group_sr_tech" attrs="{'invisible': [('state','!=','in_progress')]}"/>
+						<button name="closed" string="Closed" type='object' groups="base.group_sr_tech" attrs="{'invisible': [('state','!=','in_progress')]}"/>
+                    	<field name="state"  widget="statusbar" statusbar_visible="draft,assigned,closed" statusbar_colors='{"hold":"red","draft":"blue","in_progress":"green"}' readonly="1"/>
+                    </header>
+<sheet >
+			<group colspan="4" col="4">
+				<group>
+					<field name="partner_id" domain="[('customer','=',True),('is_company','=',False)]" context="{'search_default_customer':1, 'show_address': 1}" options='{"always_reload": True}' attrs="{'readonly':[('state','!=','draft')]}"/>
+					<field name="time_in" groups="base.group_sr_ccd,base.group_sr_ccd_man,base.group_sr_etd_man" readonly="1"/>
+					<field name="time_out" groups="base.group_sr_ccd,base.group_sr_ccd_man,base.group_sr_etd_man" readonly="1"/>
+					<field name="service_code" readonly="1" groups="base.group_sr_ccd"/>
+					<field name="verifier" password="True" attrs="{'invisible': [('state','not in',['in_progress','in_progress2'])]}" groups="base.group_sr_tech"/>
+				</group>
+				<group>
+					<field name="request_date" attrs="{'readonly':[('state','!=','draft')]}"/>
+                    <field name="service_type" attrs="{'readonly':[('state','!=','draft')]}"/>
+					<field name="service_schedule" attrs="{'readonly':[('state','!=','approve')],'required':[('state','=','approve')]}"/>
+					<field name="technician_id" attrs="{'readonly':[('state','!=','approve')],'required':[('state','=','approve')]}"/>
+				</group>
+			</group>
+			<notebook>
+				<page string="Pre Service Details">
+					<group>
+						<separator string="Reported Issues" colspan="2"/>
+						<field name="reported_ids" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}">
+							<tree editable="True">
+								<field name="name"/>
+							</tree>
+						</field>
+					</group>
+					<group colspan="4" col="4">
+						<group>
+							<separator string="Customer Care Requests" colspan="2"/>
+							<field name="ccd_requests" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+						</group>
+						<group>
+							<separator string="Customer Care Recommendations" colspan="2"/>
+							<field name="ccd_recommendations" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+						</group>
+					</group>
+				</page>
+				<page string="Items Needed">
+					<group colspan="4" col="4"> 
+						<group> 
+							<field name="warehouse_id" attrs="{'readonly':[('state','!=','assigned')],'required':[('state','=','assigned')]}"/>
+						</group>
+						<group>
+							<group colspan="4" col="4">
+							<field name="reservation_type" domain="[('warehouse_id','=',warehouse_id)]"/> 
+							<field name="reservation_id" readonly="1"/>
+							<field name="release_type" domain="[('warehouse_id','=',warehouse_id)]"/>
+							<field name="releasing_id" readonly="1"/>
+							</group>
+						</group>
+					</group>
+					<group>
+						<field name="item_ids" nolabel="1" sum="quantity" attrs="{'readonly':[('state','!=','assigned')]}">
+							<tree editable="True">
+								<field name="product_id"/>
+								<field name="quantity"/>
+								<field name="used"/>
+								<field name="uom"/>
+								<field name="price_unit" attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="price_subtotal"/>
+								<field name="state" readonly="1"/>
+							</tree>
+						</field>
+					</group>
+				</page>
+				<page string="Technical Details">
+					<group colspan="4" col="4">
+						
+					</group>
+					<group colspan="4" col="4">
+						<group>
+							<separator string="TDS Results" colspan="2"/>
+							<field name="tds_source" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>
+		                    <field name="tds_product" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>
+		                    <field name="tds_reject" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>						
+						</group>
+						<group>
+							<separator string="Flow Rate Reading" colspan="2"/>
+		                    <field name="fr_permeate" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>
+		                    <field name="fr_concentrate" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>
+						</group>
+					</group>
+					<group colspan="4" col="4">
+						<group>
+							<separator string="Pressure Reading" colspan="2"/>
+		                    <field name="pre_inlet" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>
+		                    <!-- <field name="remitted" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/> -->
+		                    <field name="pre_outlet" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>
+						</group>
+						<group>
+							<separator string="Meter Reading" colspan="2"/>
+		                    <field name="mr_before" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>
+		                    <field name="mr_after" attrs="{'readonly':[('state','!=','in_progress2')],'required':[('time_in','!=','False'),('state','=','in_progress2')]}"/>
+						</group>
+					</group>
+					<group colspan="4" col="4">
+						<group colspan="2" col="2">
+							<separator string="Actual Issues" colspan="2"/>
+							<field name="actual_ids" nolabel="1">
+								<tree editable="True">
+									<field name="name"/>
+								</tree>
+							</field>
+						</group>
+						<group colspan="2" col="2">
+							<separator string="Remarks and Recommendations" colspan="2"/>
+							<field name="etd_remarks" nolabel="1"/>
+						</group>
+					</group>
+
+				</page>
+				<page string="Accounting Details">
+					<group>
+					<separator string="Charges" colspan="4"/>
+						<field name="charge_ids" nolabel="1">
+							<tree string="Charges" editable="top" sum="amount">
+								<field name="name"/>
+								<field name="account_id"/>
+								<field name="analytic_id"/>
+								<field name="amount"/>
+							</tree>
+						</field>
+					</group>
+					<separator string="Payments" colspan="4"/>
+					<group colspan="4" col="4">
+						<group>
+							<field name="cash_amount"/>
+						</group>				
+						<group>
+							<field name="cash_account_id"/>
+						</group>				
+					</group>
+					<group>
+						<separator string="Check Payment" colspan="4"/>
+						<field name="check_ids" nolabel="1">
+							<tree string="Checks" editable="top" sum="amount">
+								<field name="bank_name"/>
+								<field name="account_no"/>
+								<field name="name"/>
+								<field name="check_type"/>
+								<field name="check_date"/>
+								<field name="amount"/>
+							</tree>
+						</field>
+					</group>
+					<group colspan="4" col="4">
+						<group>
+							<field name="receivable_id" readonly="1"/>
+						</group>				
+						<group>
+							<field name="payment_id" readonly="1"/>
+						</group>				
+					</group>
+					<separator string="Receivable Entries" colspan="4"/>
+						<group>
+							<field name="receivable_ids" readonly="1" nolabel="1">
+								<tree string="Journal Items">
+				                	<field name="move_id"/>
+				                    <field name="ref"/>
+				                    <field name="date"/>
+				                    <field name="partner_id"/>
+				                    <field name="account_id"/>
+				                    <field name="name"/>
+				                    <field name="debit"/>
+				                    <field name="credit"/>
+				                    <field name="state"/>
+				                </tree>
+							</field>
+						</group>
+					<separator string="Payment Entries" colspan="4"/>								
+						<group>
+							<field name="payment_ids" readonly="1" nolabel="1">
+								<tree string="Journal Items">
+				                	<field name="move_id"/>
+				                    <field name="ref"/>
+				                    <field name="date"/>
+				                    <field name="partner_id"/>
+				                    <field name="account_id"/>
+				                    <field name="name"/>
+				                    <field name="debit"/>
+				                    <field name="credit"/>
+				                    <field name="state"/>
+				                </tree>
+							</field>
+						</group>
+								
+				</page>
+			</notebook>
+</sheet>
+				</form>
+            </field>
+        </record>      
+		
+		<record model="ir.actions.act_window" id="action_gq_servicing_form">
+            <field name="name">Machine Servicing Requests</field>
+            <field name="res_model">gq.servicing</field>
+        </record>		
+				
+		<menuitem name="GQWEST" id="gq_root"/>
+		<menuitem name="Engineering and Technical" id="gq_etd_menu" parent="gq_root"/>
+		<menuitem name="Service Requests" id="gq_servicing_menu" action="action_gq_servicing_form" parent="gq_etd_menu"/>
+		<!--End of Menus-->
+    </data>
+</openerp>
