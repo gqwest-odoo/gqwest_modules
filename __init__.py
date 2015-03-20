@@ -5,4 +5,5 @@ import paymentrequest_expense
 import paymentrequest_items
 import irr
 import inherits
+import sale_order
 import wizard

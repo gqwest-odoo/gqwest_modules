@@ -19,6 +19,18 @@
             </field>
         </record>
         
+        <record model="ir.ui.view" id="view_gq_analytic_account_form">
+            <field name="name">gq.analytic.account.form</field>
+            <field name="model">account.analytic.account</field>
+            <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+					<field name="normal_account"/>
+                    <field name="receivable_sales"/>
+                </field>
+            </field>
+        </record>
+        
         <record model="ir.ui.view" id="view_afrc_tree">
             <field name="name">account.financial.report.category.tree</field>
             <field name="model">account.financial.report.category</field>

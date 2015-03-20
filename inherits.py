@@ -37,6 +37,14 @@ class account_account(osv.osv):
 		}
 account_account()
 
+class analytic(osv.osv):
+	_inherit = 'account.analytic.account'
+	_columns = {
+		'normal_account':fields.many2one('account.account','Normal Account'),
+		'receivable_sales':fields.many2one('account.account','Sales Receivable Account'),
+		}
+analytic()
+
 class sale_order(osv.osv):
 	_inherit = 'sale.order'
 	

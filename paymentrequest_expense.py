@@ -32,6 +32,9 @@ class payment(osv.osv):
         'releasing_date':fields.date('Releasing Date'),
         'released_by':fields.many2one('res.users','Release by'),
         'editorAudit':fields.boolean('Editor Audit'),
+        'type':fields.selection([('for_liquidation','For Liquidation'),
+                                 ('expense','Direct Expense'),
+                                 ('advances','Advances')], 'Type'),
         'state':fields.selection([
                             ('draft','Draft'),
                             ('confirm','Confirmed'),
@@ -66,7 +69,7 @@ class payment_line(osv.osv):
         'liquidation_id':fields.many2one('account.payment','Liquidation ID', ondelete='cascade'),
         'ref':fields.char('Reference', size=64),
         'amount':fields.float('Amount', required=True),
-        'account_id':fields.many2one('account.account','Account', domain=[('user_type.name','like','Expense'),('type','!=','view')]),
+        'account_id':fields.many2one('account.account','Account', domain=[('type','!=','view')]),
         'analytic_id':fields.many2one('account.analytic.account','Class'),
         }
 payment_line()
@@ -244,30 +247,29 @@ class ap(osv.osv):
                         'period_id':periodCheck[0],
                         'ref':ap['name'],
                         }
+                pr_move = am.create(cr, uid, am_vals)
                 for line in ap['line_ids']:
                     lineRead = self.pool.get('account.payment.line').read(cr, uid, line, context=None)
                     if not lineRead['account_id'] or not lineRead['account_id']:
                         raise osv.except_osv(_('Undefined Account/Class!'), _('Please assign an account/class!'))
-                    else:
-                        pr_move = am.create(cr, uid, am_vals)
-                        for line in ap['line_ids']:
-                            
-                            payableTotal+=lineRead['amount']
-                            aml_vals = {
-                                    'name':lineRead['name'],
-                                    'partner_id':ap['partner_id'][0],
-                                    'date':ap['date'],
-                                    'journal_id':journal_id,
-                                    'period_id':periodCheck[0],
-                                    'account_id':lineRead['account_id'][0],
-                                    'analytic_account_id':lineRead['analytic_id'][0],
-                                    'debit':lineRead['amount'],
-                                    'credit':0.00,
-                                    'move_id':pr_move,
-                                    }
-                            aml.create(cr, uid, aml_vals)
-                aml_vals = {
+                for line in ap['line_ids']:
+                    lineRead = self.pool.get('account.payment.line').read(cr, uid, line, context=None)
+                    payableTotal+=lineRead['amount']
+                    aml_vals = {
                             'name':lineRead['name'],
+                            'partner_id':ap['partner_id'][0],
+                            'date':ap['date'],
+                            'journal_id':journal_id,
+                            'period_id':periodCheck[0],
+                            'account_id':lineRead['account_id'][0],
+                            'analytic_account_id':lineRead['analytic_id'][0],
+                            'debit':lineRead['amount'],
+                            'credit':0.00,
+                            'move_id':pr_move,
+                            }
+                    aml.create(cr, uid, aml_vals)
+                aml_vals = {
+                            'name':ap['name'],
                             'partner_id':ap['partner_id'][0],
                             'date':ap['date'],
                             'journal_id':journal_id,
@@ -278,7 +280,7 @@ class ap(osv.osv):
                             'move_id':pr_move,
                             }
                 payable_id = aml.create(cr, uid, aml_vals)
-                self.pool.get('account.move').post(cr, uid, pr_move)
+                #self.pool.get('account.move').post(cr, uid, pr_move)
                 self.write(cr, uid, ap['id'], {'state':'for_funding','payable_entry':pr_move,'pay_entry':payable_id})
             else:
                 self.write(cr, uid, ap['id'], {'state':'for_funding'})

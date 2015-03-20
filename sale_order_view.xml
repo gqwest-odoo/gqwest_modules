@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+		<!--Service Requests Form-->
+        <record model="ir.ui.view" id="view_gq_old_so_tree">
+            <field name="name">gq.old.so.tree</field>
+            <field name="model">gq.old.so</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="OpenERP Sales Orders">
+					<field name="name"/>
+					<field name="partner_name"/>
+					<field name="partner_id"/>
+					<field name="store_name"/>
+					<field name="order_date"/>
+					<field name="profit_center"/>
+					<field name="customer_reference"/>
+					<field name="salesman_name"/>
+					<field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+		
+		<record id="view_gq_old_so_filter" model="ir.ui.view">
+            <field name="name">gq.old.so.filter</field>
+            <field name="model">gq.old.so</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="OpenERP Sales Orders">
+                    <group>
+						<field name="name"/>
+						<field name="partner_id"/>
+                    </group>
+                </search>
+            </field>
+        </record>      
+
+	<record model="ir.ui.view" id="view_gq_old_so_form">
+            <field name="name">gq.old.so.form</field>
+            <field name="model">gq.old.so</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="OpenERP Sales Order">
+                    <header>
+                    	<button name="createPicking" string="Confirm Item Request" type='object' groups="base.group_user"/>
+                    </header>
+					<sheet >
+						<group colspan="4" col="4">
+							<group>
+								<field name="partner_name"/>
+								<field name="partner_id"/>
+								<field name="store_name"/>
+								<field name="customer_reference"/>
+							</group>
+							<group>
+								<field name="order_date"/>
+								<field name="profit_center"/>
+								<field name="salesman_name"/>
+								<field name="user_id"/>
+								<field name="state"/>
+							</group>
+						</group>
+						<group>
+							<field name="item_ids" nolabel="1" height="200">
+						       <tree string="Order Items" editable="top">
+	                               	<field name="name"/>
+									<field name="product_uom_qty"/>
+									<field name="product_uom"/>
+									<field name="product_id"/>
+									<field name="price_unit"/>
+									<field name="discount"/>
+									<field name="so_id"/>
+	                           </tree>					       
+						   </field>
+						</group>
+						<group>
+							<separator string="Notes" colspan="4"/>
+							<field name="notes" nolabel="1" colspan="4"/>
+						</group>
+					</sheet>
+				</form>
+            </field>
+        </record>      
+		
+		<record model="ir.actions.act_window" id="action_gq_old_so_form">
+            <field name="name">OpenERP Sales Orders</field>
+            <field name="res_model">gq.old.so</field>
+        </record>		
+				
+		<menuitem name="OpenERP Sales Orders" id="gq_old_so_menu" action="action_gq_old_so_form" parent="gq_ccd_menu"/>
+		
+		
+		<record model="ir.ui.view" id="view_gq_old_so_item_tree">
+            <field name="name">gq.old.so.item.tree</field>
+            <field name="model">gq.old.so.item</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Items">
+					<field name="name"/>
+					<field name="product_uom_qty"/>
+					<field name="product_uom"/>
+					<field name="product_id"/>
+					<field name="price_unit"/>
+					<field name="discount"/>
+					<field name="so_id"/>
+                </tree>
+            </field>
+        </record>
+		
+	<record model="ir.ui.view" id="view_gq_old_so_item_form">
+            <field name="name">gq.old.so.item.form</field>
+            <field name="model">gq.old.so.item</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Items">
+                    <header>
+                    	<button name="createPicking" string="Confirm Item Request" type='object' groups="base.group_user"/>
+                    </header>
+					<sheet ><group>
+						<field name="name"/>
+					<field name="product_uom_qty"/>
+					<field name="product_uom"/>
+					<field name="product_id"/>
+					<field name="price_unit"/>
+					<field name="discount"/>
+					<field name="so_id"/>
+					</group>
+					</sheet>
+				</form>
+            </field>
+        </record>      
+		
+		<record model="ir.actions.act_window" id="action_gq_old_so_item_form">
+            <field name="name">Items</field>
+            <field name="res_model">gq.old.so.item</field>
+        </record>		
+				
+		<menuitem name="Items" id="gq_old_so_item_menu" action="action_gq_old_so_item_form" parent="gq_ccd_menu"/>
+		<!--End of Menus-->
+    </data>
+</openerp>

@@ -31,7 +31,7 @@
 				<group colspan="4" col="4">
 					<group>
 						<field name="partner_id" domain="[('supplier','=',True)]" context="{'search_default_supplier':1, 'show_address': 1}" options='{"always_reload": True}' attrs="{'readonly': [('state','!=','draft')]}"/>
-						<field name="for_liquidation" attrs="{'readonly':[('state','!=','draft')]}"/>						
+						<field name="type"/>
 					</group>
 					<group>
 						<field name="journal_id"/>
@@ -43,7 +43,7 @@
 						<field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
 					</group>
 				</group>
-					<group colspan="4" col="2" attrs="{'invisible':[('for_liquidation','=',True)]}">
+					<group colspan="4" col="2">
 					   <field name="line_ids" nolabel="1" height="200" attrs="{'readonly':[('editorAudit','=',False)]}">
 					       <tree string="Particulars" editable="top">
                                <field name="name"/>
@@ -59,8 +59,8 @@
 						<field name="comment" colspan="4" nolabel="1"/>
 					</group>
 					<group colspan="4" col="2" groups="account.group_account_user">
-						<separator string="Cash Advance Voucher" colspan="4" attrs="{'invisible':[('for_liquidation','=',False)]}"/>
-						<separator string="Payment Voucher" colspan="4" attrs="{'invisible':[('for_liquidation','=',True)]}"/>
+						<separator string="Cash Advance Voucher" colspan="4" attrs="{'invisible':[('type','!=','for_liquidation')]}"/>
+						<separator string="Payment Voucher" colspan="4" attrs="{'invisible':[('type','=','for_liquidation')]}"/>
 						<group colspan="4" col="4">
 							<field name="bank_id"/>
 							<field name="amount_due"/>
@@ -76,7 +76,7 @@
 							<field name="released_by" readonly="1"/>
 							<field name="releasing_date" readonly="1"/>
 						</group>
-						<group colspan="4" col="2" attrs="{'invisible':[('for_liquidation','=',False)]}">
+						<group colspan="4" col="2" attrs="{'invisible':[('type','!=','for_liquidation')]}">
 						<separator string="Liquidation Lines" colspan="4"/>
 						   <field name="liquidation_ids" nolabel="1" height="200" attrs="{'readonly':[('editorAudit','=',False)]}">
 						       <tree string="Particulars" editable="top">
@@ -90,7 +90,7 @@
 						</group>
 						<separator string="Accounting Entries" colspan="4" invisible="0"/>
 						<notebook invisible="0">
-							<page string="Payable Entries" attrs="{'invisible':[('for_liquidation','=',True)]}">
+							<page string="Payable Entries">
 								<group>
 									<field name="payable_ids" readonly="1" nolabel="1">
 										<tree string="Journal Items">
@@ -153,7 +153,7 @@
             <field name="name">account.payment.kanban</field>
             <field name="model">account.payment</field>
             <field name="arch" type="xml">
-                <kanban default_group_by="partner_id" >
+                <kanban default_group_by="journal_id" >
                 	<field name="color"/>
                     <field name="state"/>
                     <field name="bank_id"/>
