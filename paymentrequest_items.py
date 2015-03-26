@@ -14,7 +14,7 @@ class payment(osv.osv):
         company_id = context.get('company_id', user.company_id.id)
         return company_id or False
     _name = 'account.payment.items'
-    _description = "Payment Orders"
+    _description = "Payment Orders (Items)"
     _columns = {
         'name':fields.char('Payment Order Number', size=32),
 	    'date':fields.date('Date'),

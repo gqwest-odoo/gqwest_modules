@@ -33,7 +33,7 @@
 'depends': ['sale','account','stock'],
 'data': ['servicing_view.xml','store_inspection_view.xml','prpayments_view.xml',
          'sale_order_view.xml',
-         'payment_sequence.xml','payment_view.xml','payment_view_items.xml','irr_view.xml','inherits_view.xml', 'wizard/wizards_view.xml'],
+         'payment_sequence.xml','payment_view.xml','irr_view.xml','inherits_view.xml', 'wizard/wizards_view.xml'],
 'demo': [],
 'test': [],
 'installable': True,

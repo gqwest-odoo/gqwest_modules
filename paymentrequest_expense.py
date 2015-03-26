@@ -69,8 +69,18 @@ class payment_line(osv.osv):
         'liquidation_id':fields.many2one('account.payment','Liquidation ID', ondelete='cascade'),
         'ref':fields.char('Reference', size=64),
         'amount':fields.float('Amount', required=True),
-        'account_id':fields.many2one('account.account','Account', domain=[('type','!=','view')]),
-        'analytic_id':fields.many2one('account.analytic.account','Class'),
+        'analytic_id':fields.many2one('account.analytic.account','Class',domain=[('type','=','normal')]),
+        }
+payment_line()
+
+class payment_deposits(osv.osv):
+    _name = 'account.payment.deposit'
+    _description  = "Deposits"
+    _columns = {
+        'name':fields.char('Deposit Slip', size=64, required=True),
+        'liquidation_id':fields.many2one('account.payment','Liquidation ID', ondelete='cascade'),
+        'amount':fields.float('Amount', required=True),
+        'account_id':fields.many2one('account.account','Bank',domain=[('type','=','liquidity')]),
         }
 payment_line()
 
@@ -79,6 +89,7 @@ class ap(osv.osv):
     _columns = {
         'line_ids':fields.one2many('account.payment.line','payment_id','Payment Lines'),
         'liquidation_ids':fields.one2many('account.payment.line','liquidation_id','Liquidation Lines'),
+        'deposit_ids':fields.one2many('account.payment.deposit','liquidation_id','Deposits'),
         'bank_id':fields.many2one('account.journal', 'Bank', domain=[('type','=','bank')]),
         'journal_id':fields.many2one('account.journal','Expense Journal', domain=[('type','=','purchase')]),
         'amount_due':fields.float('Amount to Pay'),
@@ -98,6 +109,10 @@ class ap(osv.osv):
              date = date.strftime('%m/%d/%Y')
              self.write(cr, uid, ids, {'state':'funded', 'funded_by':uid,'funding_date':date})
         return True
+    
+#    def confirm_for_liquidation(self, cr, uid, ids, context=None):
+#        for ap in self.read(cr, uid, ids, context=None):
+            
     
     def release(self, cr, uid, ids, context=None):
         aml = self.pool.get('account.move.line')
